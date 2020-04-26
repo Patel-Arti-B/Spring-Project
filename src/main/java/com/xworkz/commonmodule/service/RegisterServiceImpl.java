@@ -1,6 +1,5 @@
 package com.xworkz.commonmodule.service;
 
-import java.util.Objects;
 import java.util.Random;
 
 import org.springframework.beans.BeanUtils;
@@ -72,6 +71,7 @@ public class RegisterServiceImpl implements RegisterService {
 			System.out.println("Register course is Not valid...");
 			flag = false;
 		}
+
 		String agree = registerDTO.getAgree();
 		if (agree != null) {
 			System.out.println("Register agree is valid...");
@@ -81,11 +81,11 @@ public class RegisterServiceImpl implements RegisterService {
 			flag = false;
 		}
 
-		/*if (registerDTO.getAgree().equals("disagree")) {
+		if (registerDTO.getAgree().equals("disagree")) {
 			System.out.println("please valid registration...");
 			model.addAttribute("disAgree", "Your registration Dis-Agree...You should Agree for registration..");
 			return "Register";
-		}*/
+		}
 
 		if (userDAO.validUserId(registerDTO.getUserId()) && userDAO.validEmail(registerDTO.getEmail())) {
 			RegisterEntity entity = new RegisterEntity();
@@ -121,16 +121,4 @@ public class RegisterServiceImpl implements RegisterService {
 		}
 		return "Register";
 	}
-
-	/*
-	 * public String updateCount(LoginDTO dto) {
-	 * System.out.println("invoked updateCount..."); boolean flag = false;
-	 * RegisterEntity entity = this.passwordDAO.updateByEmail(dto.getEmail());
-	 * System.out.println("Entity:" + entity); if (Objects.nonNull(entity)) { return
-	 * "Login"; } if (noOfLogin < 3 && noOfLogin >= 0) { if
-	 * (dto.getPassword().equals(dto.getPassword())) {
-	 * System.out.println("Password is correct..."); flag = true; } else {
-	 * noOfLogin++; this.passwordDAO.updateByEmail(noOfLogin, entity.getId()); } }
-	 * else { if (noOfLogin >= 3) { return "Login"; } } if (flag = true) { return
-	 * "Login"; } return "Login"; }
-	 */}
+}

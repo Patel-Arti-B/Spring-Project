@@ -96,9 +96,8 @@
 			<div class="col-sm-4">
 				<div class="form-check">
 					<input class="form-check-input" type="radio" name="agree"
-						id="agree" value="disagree">Agree <input
-						class="form-check-input" type="radio" name="agree" id="agree"
-						value="disagree">Dis-Agree
+						value="disagree">Agree <input class="form-check-input"
+						type="radio" name="agree" value="disagree">Dis-Agree
 				</div>
 			</div>
 		</div>

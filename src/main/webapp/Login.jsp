@@ -50,18 +50,22 @@
 				<label for="email" class="col-sm-2 col-form-label">Email:</label>
 				<div class="col-sm-4">
 					<input type="text" class="form-control" name="email"
-						placeholder="email" required>
+						placeholder="email">
 				</div>
 			</div>
 			<div class="form-group row">
 				<label for="password" class="col-sm-2 col-form-label">Password:</label>
 				<div class="col-sm-4">
 					<input type="password" class="form-control" name="password"
-						placeholder="password" required>
+						placeholder="password">
 				</div>
 			</div>
 			<button type="submit" class="btn btn-primary">Login</button>
+
 		</form>
+		<h4>
+			<a href="Forgot.jsp">Forgot Password</a>
+		</h4>
 	</div>
 	<h4>${validmsg}</h4>
 	<div class="footer">

@@ -3,6 +3,7 @@ package com.xworkz.commonmodule.service;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.xworkz.commonmodule.dao.LoginDAO;
@@ -33,11 +34,15 @@ public class LoginServiceImpl implements LoginService {
 			int idDb = entity.getId();
 			System.out.println("Id from Db:" + idDb);
 
-			noOfCount=entity.getCount();
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+			boolean isPswMatch = encoder.matches(dto.getPassword(), pswDb);
+			System.out.println("Is Password Is Match" + isPswMatch);
+
+			noOfCount = entity.getCount();
 			System.out.println(noOfCount);
 			if (noOfCount >= 0 && noOfCount < 3) {
-				if (dto.getPassword().equals(pswDb)) {
-					System.out.println("Password is right...");
+				if (isPswMatch == true) {
+					System.out.println("Password is match.....");
 					flag = true;
 				} else {
 					noOfCount++;

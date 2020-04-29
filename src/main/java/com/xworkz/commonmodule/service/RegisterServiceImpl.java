@@ -4,6 +4,7 @@ import java.util.Random;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -81,11 +82,13 @@ public class RegisterServiceImpl implements RegisterService {
 			flag = false;
 		}
 
-		if (registerDTO.getAgree().equals("disagree")) {
-			System.out.println("please valid registration...");
-			model.addAttribute("disAgree", "Your registration Dis-Agree...You should Agree for registration..");
-			return "Register";
-		}
+		/*
+		 * if (registerDTO.getAgree().equals("disagree")) {
+		 * System.out.println("please valid registration...");
+		 * model.addAttribute("disAgree",
+		 * "Your registration Dis-Agree...You should Agree for registration.."); return
+		 * "Register"; }
+		 */
 
 		if (userDAO.validUserId(registerDTO.getUserId()) && userDAO.validEmail(registerDTO.getEmail())) {
 			RegisterEntity entity = new RegisterEntity();
@@ -103,13 +106,21 @@ public class RegisterServiceImpl implements RegisterService {
 			for (int i = 0; i < length; i++) {
 				psw += text[i];
 			}
-			entity.setPassword(psw);
+
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+			String hashedpsw = encoder.encode(psw);
+			System.out.println("Encrypt psw:"+hashedpsw);
+			
+			encoder.matches(psw, hashedpsw);
+
+			entity.setPassword(hashedpsw);
 			entity.setCount(0);
-			System.out.println("Password" + entity.getPassword());
+			System.out.println("Password:" + psw);
 
 			model.addAttribute("UserID", entity.getUserId());
 			model.addAttribute("Email", entity.getEmail());
 			model.addAttribute("password", entity.getPassword());
+
 			registerDAO.saveRegister(entity);
 			return "Register";
 		} else if (userDAO.validUserId(registerDTO.getUserId())) {

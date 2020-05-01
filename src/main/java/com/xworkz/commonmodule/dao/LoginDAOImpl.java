@@ -2,6 +2,7 @@ package com.xworkz.commonmodule.dao;
 
 import java.util.Objects;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -9,21 +10,24 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.xworkz.commonmodule.controller.ForgotController;
 import com.xworkz.commonmodule.entity.RegisterEntity;
 
 @Repository
 public class LoginDAOImpl implements LoginDAO {
 
+	private static final Logger logger = Logger.getLogger(ForgotController.class);
+
 	@Autowired
 	private SessionFactory factory;
 
 	public void setFactory(SessionFactory factory) {
-		System.out.println("invoked setFactory..");
+		logger.info("invoked setFactory..");
 		this.factory = factory;
 	}
 
 	public RegisterEntity getByEmail(String email) {
-		System.out.println("invoked getByEmail");
+		logger.info("invoked getByEmail");
 		Session session = null;
 		RegisterEntity entity = null;
 		try {
@@ -33,7 +37,7 @@ public class LoginDAOImpl implements LoginDAO {
 			Query query = session.createQuery(hql);
 
 			entity = (RegisterEntity) query.uniqueResult();
-			System.out.println("Entity:" + entity);
+			logger.info("Entity:" + entity);
 			if (entity != null) {
 				System.out.println("Email and Password matching...");
 				return entity;
@@ -42,7 +46,7 @@ public class LoginDAOImpl implements LoginDAO {
 			}
 		} catch (HibernateException h) {
 			session.getTransaction().rollback();
-			h.printStackTrace();
+			logger.error(h.getMessage(), h);
 		} finally {
 			if (Objects.nonNull(session)) {
 				session.close();
@@ -52,7 +56,7 @@ public class LoginDAOImpl implements LoginDAO {
 	}
 
 	public Integer updateCount(int noOfCount, int id) {
-		System.out.println("invoked updateCount.....");
+		logger.info("invoked updateCount.....");
 		Session session = null;
 		try {
 			session = factory.openSession();
@@ -61,11 +65,11 @@ public class LoginDAOImpl implements LoginDAO {
 			Query query = session.createQuery(hql);
 
 			int count = query.executeUpdate();
-			System.out.println("Count result:" + count);
+			logger.info("Count result:" + count);
 			session.getTransaction().commit();
 			return 1;
 		} catch (HibernateException h) {
-			h.printStackTrace();
+			logger.error(h.getMessage(), h);
 		} finally {
 			if (Objects.nonNull(session)) {
 				session.close();

@@ -2,12 +2,18 @@ package com.xworkz.commonmodule.dto;
 
 import java.io.Serializable;
 
+import org.apache.log4j.Logger;
+
+import com.xworkz.commonmodule.controller.ForgotController;
+
 public class ForgotDTO implements Serializable {
+
+	private static final Logger logger = Logger.getLogger(ForgotController.class);
 
 	private String email;
 
 	public ForgotDTO() {
-		System.out.println("created \t" + this.getClass().getSimpleName());
+		logger.info("created \t" + this.getClass().getSimpleName());
 	}
 
 	public String getEmail() {

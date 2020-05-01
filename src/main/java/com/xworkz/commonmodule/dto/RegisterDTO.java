@@ -2,7 +2,13 @@ package com.xworkz.commonmodule.dto;
 
 import java.io.Serializable;
 
+import org.apache.log4j.Logger;
+
+import com.xworkz.commonmodule.controller.ForgotController;
+
 public class RegisterDTO implements Serializable {
+
+	private static final Logger logger = Logger.getLogger(ForgotController.class);
 
 	private String userId;
 	private String email;
@@ -13,7 +19,7 @@ public class RegisterDTO implements Serializable {
 	private int count;
 
 	public RegisterDTO() {
-		System.out.println("creted \t" + this.getClass().getSimpleName());
+		logger.info("creted \t" + this.getClass().getSimpleName());
 	}
 
 	public String getUserId() {

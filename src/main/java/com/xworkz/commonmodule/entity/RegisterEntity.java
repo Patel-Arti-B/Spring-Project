@@ -8,13 +8,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.GenericGenerator;
+
+import com.xworkz.commonmodule.controller.ForgotController;
 
 import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "register_tab")
 public class RegisterEntity implements Serializable {
+
+	private static final Logger logger = Logger.getLogger(ForgotController.class);
 
 	@Id
 	@GenericGenerator(name = "Register", strategy = "increment")
@@ -42,7 +47,7 @@ public class RegisterEntity implements Serializable {
 	private int count;
 
 	public RegisterEntity() {
-		System.out.println("created \t" + this.getClass().getSimpleName());
+		logger.info("created \t" + this.getClass().getSimpleName());
 	}
 
 	public int getId() {

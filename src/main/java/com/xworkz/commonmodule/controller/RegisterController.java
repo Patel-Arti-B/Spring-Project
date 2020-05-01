@@ -1,5 +1,6 @@
 package com.xworkz.commonmodule.controller;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,22 +11,23 @@ import com.xworkz.commonmodule.dto.RegisterDTO;
 import com.xworkz.commonmodule.service.RegisterService;
 
 @Controller
-@RequestMapping("/")
 public class RegisterController {
+
+	private static final Logger logger = Logger.getLogger(ForgotController.class);
 
 	@Autowired
 	private RegisterService service;
 
 	public void setService(RegisterService service) {
-		System.out.println("invoked setRegisterService");
+		logger.info("invoked setRegisterService");
 		this.service = service;
 	}
 
 	@RequestMapping("/register.do")
 	public String onSave(@ModelAttribute("Register") RegisterDTO dto, Model model) {
-		System.out.println("invoked onSave....");
+		logger.info("invoked onSave....");
 
-		System.out.println("model Attribute " + dto);
+		logger.info("model Attribute " + dto);
 
 		model.addAttribute("msg", "Register Data Successfully...");
 

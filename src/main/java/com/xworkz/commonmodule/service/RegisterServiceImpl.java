@@ -2,12 +2,14 @@ package com.xworkz.commonmodule.service;
 
 import java.util.Random;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import com.xworkz.commonmodule.controller.ForgotController;
 import com.xworkz.commonmodule.dao.RegisterDAO;
 import com.xworkz.commonmodule.dao.RegisterUserDAO;
 import com.xworkz.commonmodule.dto.RegisterDTO;
@@ -16,6 +18,8 @@ import com.xworkz.commonmodule.entity.RegisterEntity;
 @Service
 public class RegisterServiceImpl implements RegisterService {
 
+	private static final Logger logger = Logger.getLogger(ForgotController.class);
+
 	@Autowired
 	private RegisterDAO registerDAO;
 
@@ -23,69 +27,68 @@ public class RegisterServiceImpl implements RegisterService {
 	private RegisterUserDAO userDAO;
 
 	public void setUserDAO(RegisterUserDAO userDAO) {
-		System.out.println("invoked setUserDAO.....");
+		logger.info("invoked setUserDAO.....");
 		this.userDAO = userDAO;
 	}
 
 	public void setRegisterDAO(RegisterDAO registerDAO) {
-		System.out.println("invoked setRegisterDAO......");
+		logger.info("invoked setRegisterDAO......");
 		this.registerDAO = registerDAO;
 	}
 
 	public RegisterServiceImpl() {
-		System.out.println("created \t" + this.getClass().getSimpleName());
+		logger.info("created \t" + this.getClass().getSimpleName());
 	}
 
 	public String validAndsave(RegisterDTO registerDTO, Model model) {
-		System.out.println("invoked validAndsave....");
+		logger.info("invoked validAndsave....");
 
 		boolean flag = false;
 		String userId = registerDTO.getUserId();
 		if (userId != null && !userId.isEmpty() && userId.length() >= 3 && userId.length() <= 10) {
-			System.out.println("Register User Id is valid...");
+			logger.info("Register User Id is valid...");
 			flag = true;
 		} else {
-			System.out.println("Register User Id is Not valid...");
+			logger.info("Register User Id is Not valid...");
 			flag = false;
 		}
 		String email = registerDTO.getEmail();
 		if (email != null && !email.isEmpty()) {
-			System.out.println("Register email is valid...");
+			logger.info("Register email is valid...");
 			flag = true;
 		} else {
-			System.out.println("Register email is Not valid...");
+			logger.info("Register email is Not valid...");
 			flag = false;
 		}
 		String phone = registerDTO.getPhone();
 		if (phone != null && !phone.isEmpty()) {
-			System.out.println("Register phone number is valid...");
+			logger.info("Register phone number is valid...");
 			flag = true;
 		} else {
-			System.out.println("Register phone number is Not valid...");
+			logger.info("Register phone number is Not valid...");
 			flag = false;
 		}
 		String course = registerDTO.getCourse();
 		if (course != null && !course.isEmpty()) {
-			System.out.println("Register course is valid...");
+			logger.info("Register course is valid...");
 			flag = true;
 		} else {
-			System.out.println("Register course is Not valid...");
+			logger.info("Register course is Not valid...");
 			flag = false;
 		}
 
 		String agree = registerDTO.getAgree();
 		if (agree != null) {
-			System.out.println("Register agree is valid...");
+			logger.info("Register agree is valid...");
 			flag = true;
 		} else {
-			System.out.println("Register agree is Not valid...");
+			logger.info("Register agree is Not valid...");
 			flag = false;
 		}
 
 		/*
 		 * if (registerDTO.getAgree().equals("disagree")) {
-		 * System.out.println("please valid registration...");
-		 * model.addAttribute("disAgree",
+		 * logger.info("please valid registration..."); model.addAttribute("disAgree",
 		 * "Your registration Dis-Agree...You should Agree for registration.."); return
 		 * "Register"; }
 		 */
@@ -109,13 +112,13 @@ public class RegisterServiceImpl implements RegisterService {
 
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 			String hashedpsw = encoder.encode(psw);
-			System.out.println("Encrypt psw:"+hashedpsw);
-			
+			logger.info("Encrypt psw:" + hashedpsw);
+
 			encoder.matches(psw, hashedpsw);
 
 			entity.setPassword(hashedpsw);
 			entity.setCount(0);
-			System.out.println("Password:" + psw);
+			logger.info("Password:" + psw);
 
 			model.addAttribute("UserID", entity.getUserId());
 			model.addAttribute("Email", entity.getEmail());

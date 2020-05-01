@@ -2,6 +2,7 @@ package com.xworkz.commonmodule.dao;
 
 import java.util.Objects;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -9,25 +10,28 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.xworkz.commonmodule.controller.ForgotController;
 import com.xworkz.commonmodule.entity.RegisterEntity;
 
 @Repository
 public class ForgotDAOImpl implements ForgotDAO {
 
+	private static final Logger logger = Logger.getLogger(ForgotController.class);
+
 	@Autowired
 	private SessionFactory factory;
 
 	public void setFactory(SessionFactory factory) {
-		System.out.println("invoked setFactory......");
+		logger.info("invoked setFactory......");
 		this.factory = factory;
 	}
 
 	public ForgotDAOImpl() {
-		System.out.println("created \t" + this.getClass().getSimpleName());
+		logger.info("created \t" + this.getClass().getSimpleName());
 	}
 
 	public RegisterEntity getForgotByEmail(String email) {
-		System.out.println("invoked get forgot by email...");
+		logger.info("invoked get forgot by email...");
 		Session session = null;
 		RegisterEntity entity = null;
 		try {
@@ -36,19 +40,19 @@ public class ForgotDAOImpl implements ForgotDAO {
 			String hql = "from RegisterEntity where email='" + email + "'";
 
 			Query query = session.createQuery(hql);
-			System.out.println("Query created...." + query);
+			logger.info("Query created...." + query);
 
 			entity = (RegisterEntity) query.uniqueResult();
-			System.out.println("Entity:" + entity);
+			logger.info("Entity:" + entity);
 			if (entity != null) {
-				System.out.println("Email match");
+				logger.info("Email match");
 				return entity;
 			} else {
 				return null;
 			}
 		} catch (HibernateException h) {
 			session.getTransaction().rollback();
-			h.printStackTrace();
+			logger.error(h.getMessage(), h);
 		} finally {
 			if (Objects.nonNull(session)) {
 				session.close();
@@ -58,7 +62,7 @@ public class ForgotDAOImpl implements ForgotDAO {
 	}
 
 	public int updateCountForgot(String password, int countNo, int id) {
-		System.out.println("invoked updateCountForgot......");
+		logger.info("invoked updateCountForgot......");
 		Session session = null;
 		try {
 			session = factory.openSession();
@@ -66,15 +70,15 @@ public class ForgotDAOImpl implements ForgotDAO {
 			String hql = "update RegisterEntity forgot set forgot.password='" + password + "',forgot.count='" + countNo
 					+ "'where forgot.id='" + id + "'";
 			Query query = session.createQuery(hql);
-			System.out.println("update query creted...");
+			logger.info("update query creted...");
 
 			query.executeUpdate();
-			System.out.println("Count result");
+			logger.info("Count result");
 			session.getTransaction().commit();
 			return 1;
 		} catch (HibernateException h) {
 			session.getTransaction().rollback();
-			h.printStackTrace();
+			logger.error(h.getMessage(), h);
 		} finally {
 			if (Objects.nonNull(session)) {
 				session.close();

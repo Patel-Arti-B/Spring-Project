@@ -1,30 +1,34 @@
 package com.xworkz.commonmodule.dao;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.xworkz.commonmodule.controller.ForgotController;
 import com.xworkz.commonmodule.entity.RegisterEntity;
 
 @Repository
 public class RegisterUserDAOImlp implements RegisterUserDAO {
 
+	private static final Logger logger = Logger.getLogger(ForgotController.class);
+
 	@Autowired
 	private SessionFactory factory;
 
 	public void setFactory(SessionFactory factory) {
-		System.out.println("invoked setFactory....");
+		logger.info("invoked setFactory....");
 		this.factory = factory;
 	}
 
 	public RegisterUserDAOImlp() {
-		System.out.println("created \t" + this.getClass().getSimpleName());
+		logger.info("created \t" + this.getClass().getSimpleName());
 	}
 
 	public boolean validUserId(String userId) {
-		System.out.println("invoked validUserId....");
+		logger.info("invoked validUserId....");
 		Session session = factory.openSession();
 		String hql = "select register from RegisterEntity register where register.userId='" + userId + "'";
 		Query<RegisterEntity> query = session.createQuery(hql, RegisterEntity.class);

@@ -13,6 +13,8 @@ import com.xworkz.commonmodule.controller.ForgotController;
 import com.xworkz.commonmodule.dao.ForgotDAO;
 import com.xworkz.commonmodule.dto.ForgotDTO;
 import com.xworkz.commonmodule.entity.RegisterEntity;
+import com.xworkz.commonmodule.exception.DAOException;
+import com.xworkz.commonmodule.exception.ServiceException;
 
 @Service
 public class ForgotServiceImpl implements ForgotService {
@@ -31,7 +33,7 @@ public class ForgotServiceImpl implements ForgotService {
 		logger.info("created \t" + this.getClass().getSimpleName());
 	}
 
-	public String validForgotPsw(ForgotDTO forgotDTO, Model model) {
+	public String validForgotPsw(ForgotDTO forgotDTO, Model model) throws ServiceException {
 		logger.info("invoked validForgotPsw");
 		try {
 			RegisterEntity entity = this.forgotDAO.getForgotByEmail(forgotDTO.getEmail());
@@ -77,8 +79,9 @@ public class ForgotServiceImpl implements ForgotService {
 				return "emailMatch";
 			}
 		} catch (Exception e) {
-			logger.info("Forgot service exception......");
-			logger.error(e.getMessage(), e);
+			ServiceException exception = new ServiceException();
+			logger.error(exception.getMessage(), e);
+			throw exception;
 		}
 		return "emailNotMatch";
 	}

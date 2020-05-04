@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.xworkz.commonmodule.controller.ForgotController;
 import com.xworkz.commonmodule.entity.RegisterEntity;
+import com.xworkz.commonmodule.exception.DAOException;
 
 @Repository
 public class ForgotDAOImpl implements ForgotDAO {
@@ -30,7 +31,7 @@ public class ForgotDAOImpl implements ForgotDAO {
 		logger.info("created \t" + this.getClass().getSimpleName());
 	}
 
-	public RegisterEntity getForgotByEmail(String email) {
+	public RegisterEntity getForgotByEmail(String email) throws DAOException {
 		logger.info("invoked get forgot by email...");
 		Session session = null;
 		RegisterEntity entity = null;
@@ -47,12 +48,12 @@ public class ForgotDAOImpl implements ForgotDAO {
 			if (entity != null) {
 				logger.info("Email match");
 				return entity;
-			} else {
-				return null;
 			}
 		} catch (HibernateException h) {
 			session.getTransaction().rollback();
-			logger.error(h.getMessage(), h);
+			DAOException exception = new DAOException();
+			logger.error(exception.getMessage(), h);
+			throw exception;
 		} finally {
 			if (Objects.nonNull(session)) {
 				session.close();
@@ -61,7 +62,7 @@ public class ForgotDAOImpl implements ForgotDAO {
 		return null;
 	}
 
-	public int updateCountForgot(String password, int countNo, int id) {
+	public int updateCountForgot(String password, int countNo, int id) throws DAOException {
 		logger.info("invoked updateCountForgot......");
 		Session session = null;
 		try {
@@ -78,12 +79,13 @@ public class ForgotDAOImpl implements ForgotDAO {
 			return 1;
 		} catch (HibernateException h) {
 			session.getTransaction().rollback();
-			logger.error(h.getMessage(), h);
+			DAOException exception = new DAOException();
+			logger.error(exception.getMessage(), h);
+			throw exception;
 		} finally {
 			if (Objects.nonNull(session)) {
 				session.close();
 			}
 		}
-		return 0;
 	}
 }

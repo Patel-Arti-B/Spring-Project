@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.xworkz.commonmodule.dto.ForgotDTO;
+import com.xworkz.commonmodule.exception.ControllerException;
 import com.xworkz.commonmodule.service.ForgotService;
 
 @Controller
@@ -26,7 +27,7 @@ public class ForgotController {
 	}
 
 	@RequestMapping("forgot.do")
-	public String forgotPsw(ForgotDTO forgotDTO, Model model) {
+	public String forgotPsw(ForgotDTO forgotDTO, Model model) throws ControllerException {
 		logger.info("invoked forgotPsw......");
 		String Forgotpage = "";
 
@@ -49,8 +50,9 @@ public class ForgotController {
 				Forgotpage = "Forgot";
 			}
 		} catch (Exception e) {
-			logger.error("controller Exception......");
-			e.printStackTrace();
+			ControllerException exception = new ControllerException();
+			logger.error(exception.getMessage(), e);
+			throw exception;
 		}
 		return Forgotpage;
 	}

@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.xworkz.commonmodule.dto.LoginDTO;
+import com.xworkz.commonmodule.exception.ControllerException;
 import com.xworkz.commonmodule.service.LoginService;
 
 @Controller
@@ -27,7 +28,7 @@ public class LoginController {
 	}
 
 	@RequestMapping("/login.do")
-	public String onLogin(LoginDTO loginDTO, Model model) {
+	public String onLogin(LoginDTO loginDTO, Model model) throws ControllerException {
 		String page = "";
 		logger.info("invoked onLogin...");
 
@@ -44,19 +45,20 @@ public class LoginController {
 			if (data.equals("LoginSuccess")) {
 				logger.info("Login Successfully...");
 				model.addAttribute("valid", "Login Successfully...");
-				return "Home";
+				page = "Home";
 			} else if (data.equals("LoginFail")) {
 				logger.info("your Email and Password is wrong...");
 				model.addAttribute("validmsg", "your Email and Password is wrong...");
-				return "Login";
+				page = "Login";
 			} else {
 				logger.info("Block user...");
 				model.addAttribute("loginblock", "Your Account is Block.");
-				return "LoginBlock";
+				page = "LoginBlock";
 			}
 		} catch (Exception e) {
-			logger.error("controller Exception......");
-			logger.error(e.getMessage(), e);
+			ControllerException exception = new ControllerException();
+			logger.error(exception.getMessage(), e);
+			throw exception;
 		}
 		return page;
 	}

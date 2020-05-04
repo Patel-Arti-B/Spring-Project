@@ -1,8 +1,10 @@
 package com.xworkz.commonmodule.dao;
 
-public interface RegisterUserDAO {
-	public boolean validUserId(String userId);
+import com.xworkz.commonmodule.exception.DAOException;
 
-	public boolean validEmail(String email);
+public interface RegisterUserDAO {
+	public boolean validUserId(String userId) throws DAOException;
+
+	public boolean validEmail(String email) throws DAOException;
 
 }

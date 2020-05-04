@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.xworkz.commonmodule.controller.ForgotController;
 import com.xworkz.commonmodule.entity.RegisterEntity;
+import com.xworkz.commonmodule.exception.DAOException;
 
 @Repository
 public class RegisterDAOImpl implements RegisterDAO {
@@ -25,7 +26,7 @@ public class RegisterDAOImpl implements RegisterDAO {
 		this.factory = factory;
 	}
 
-	public void saveRegister(RegisterEntity entity) {
+	public void saveRegister(RegisterEntity entity) throws DAOException {
 		logger.info("invoked saveRegister");
 		Session session = null;
 		try {
@@ -39,8 +40,10 @@ public class RegisterDAOImpl implements RegisterDAO {
 			}
 			session.getTransaction().commit();
 		} catch (HibernateException h) {
-			logger.error(h.getMessage(), h);
 			session.getTransaction().rollback();
+			DAOException exception = new DAOException();
+			logger.error(exception.getMessage(), h);
+			throw exception;
 		} finally {
 			if (Objects.nonNull(session)) {
 				session.close();

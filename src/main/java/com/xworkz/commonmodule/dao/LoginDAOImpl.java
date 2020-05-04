@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.xworkz.commonmodule.controller.ForgotController;
 import com.xworkz.commonmodule.entity.RegisterEntity;
+import com.xworkz.commonmodule.exception.DAOException;
 
 @Repository
 public class LoginDAOImpl implements LoginDAO {
@@ -26,7 +27,7 @@ public class LoginDAOImpl implements LoginDAO {
 		this.factory = factory;
 	}
 
-	public RegisterEntity getByEmail(String email) {
+	public RegisterEntity getByEmail(String email) throws DAOException {
 		logger.info("invoked getByEmail");
 		Session session = null;
 		RegisterEntity entity = null;
@@ -41,12 +42,12 @@ public class LoginDAOImpl implements LoginDAO {
 			if (entity != null) {
 				System.out.println("Email and Password matching...");
 				return entity;
-			} else {
-				return null;
 			}
 		} catch (HibernateException h) {
 			session.getTransaction().rollback();
-			logger.error(h.getMessage(), h);
+			DAOException exception = new DAOException();
+			logger.error(exception.getMessage(), h);
+			throw exception;
 		} finally {
 			if (Objects.nonNull(session)) {
 				session.close();
@@ -55,7 +56,7 @@ public class LoginDAOImpl implements LoginDAO {
 		return entity;
 	}
 
-	public Integer updateCount(int noOfCount, int id) {
+	public Integer updateCount(int noOfCount, int id) throws DAOException {
 		logger.info("invoked updateCount.....");
 		Session session = null;
 		try {
@@ -69,12 +70,13 @@ public class LoginDAOImpl implements LoginDAO {
 			session.getTransaction().commit();
 			return 1;
 		} catch (HibernateException h) {
-			logger.error(h.getMessage(), h);
+			DAOException exception = new DAOException();
+			logger.error(exception.getMessage(), h);
+			throw exception;
 		} finally {
 			if (Objects.nonNull(session)) {
 				session.close();
 			}
 		}
-		return 0;
 	}
 }

@@ -4,6 +4,7 @@ import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,8 @@ import com.xworkz.commonmodule.dao.RegisterDAO;
 import com.xworkz.commonmodule.dao.RegisterUserDAO;
 import com.xworkz.commonmodule.dto.RegisterDTO;
 import com.xworkz.commonmodule.entity.RegisterEntity;
+import com.xworkz.commonmodule.exception.DAOException;
+import com.xworkz.commonmodule.exception.ServiceException;
 
 @Service
 public class RegisterServiceImpl implements RegisterService {
@@ -40,7 +43,7 @@ public class RegisterServiceImpl implements RegisterService {
 		logger.info("created \t" + this.getClass().getSimpleName());
 	}
 
-	public String validAndsave(RegisterDTO registerDTO, Model model) {
+	public String validAndsave(RegisterDTO registerDTO, Model model) throws ServiceException {
 		logger.info("invoked validAndsave....");
 
 		boolean flag = false;
@@ -86,53 +89,61 @@ public class RegisterServiceImpl implements RegisterService {
 			flag = false;
 		}
 
-		/*
-		 * if (registerDTO.getAgree().equals("disagree")) {
-		 * logger.info("please valid registration..."); model.addAttribute("disAgree",
-		 * "Your registration Dis-Agree...You should Agree for registration.."); return
-		 * "Register"; }
-		 */
+		if (registerDTO.getAgree().equals("disagree")) {
+			logger.info("please valid registration...");
+			model.addAttribute("disAgree", "Your registration Dis-Agree...You should Agree for registration..");
+			return "Register";
+		} else {
+			try {
+				RegisterEntity entity = new RegisterEntity();
+				BeanUtils.copyProperties(registerDTO, entity);
 
-		if (userDAO.validUserId(registerDTO.getUserId()) && userDAO.validEmail(registerDTO.getEmail())) {
-			RegisterEntity entity = new RegisterEntity();
-			BeanUtils.copyProperties(registerDTO, entity);
+				if (userDAO.validUserId(registerDTO.getUserId()) && userDAO.validEmail(registerDTO.getEmail())) {
+					BeanUtils.copyProperties(registerDTO, entity);
 
-			String chars = "ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghigklmnopqrstuvwxyz123456789!@#$%^&*";
-			String psw = "";
-			int length = 8;
+					String chars = "ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghigklmnopqrstuvwxyz123456789!@#$%^&*";
+					String psw = "";
+					int length = 8;
 
-			Random random = new Random();
-			char[] text = new char[length];
-			for (int i = 0; i < length; i++) {
-				text[i] = chars.charAt(random.nextInt(chars.length()));
+					Random random = new Random();
+					char[] text = new char[length];
+					for (int i = 0; i < length; i++) {
+						text[i] = chars.charAt(random.nextInt(chars.length()));
+					}
+					for (int i = 0; i < length; i++) {
+						psw += text[i];
+					}
+
+					BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+					String hashedpsw = encoder.encode(psw);
+					logger.info("Encrypt psw:" + hashedpsw);
+
+					encoder.matches(psw, hashedpsw);
+
+					entity.setPassword(hashedpsw);
+					entity.setCount(0);
+					logger.info("Password:" + psw);
+
+					model.addAttribute("UserID", entity.getUserId());
+					model.addAttribute("Email", entity.getEmail());
+					model.addAttribute("password", entity.getPassword());
+
+					registerDAO.saveRegister(entity);
+					return "Register";
+				} else if (userDAO.validUserId(registerDTO.getUserId())) {
+					model.addAttribute("useUserID", "UserId Already exists");
+					return "Register";
+				} else if (userDAO.validEmail(registerDTO.getEmail())) {
+					model.addAttribute("useEmail", "Email Already exists");
+					return "Register";
+				}
+			} catch (Exception e) {
+				ServiceException exception = new ServiceException();
+				logger.error(exception.getMessage(), e);
+				throw exception;
 			}
-			for (int i = 0; i < length; i++) {
-				psw += text[i];
-			}
-
-			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-			String hashedpsw = encoder.encode(psw);
-			logger.info("Encrypt psw:" + hashedpsw);
-
-			encoder.matches(psw, hashedpsw);
-
-			entity.setPassword(hashedpsw);
-			entity.setCount(0);
-			logger.info("Password:" + psw);
-
-			model.addAttribute("UserID", entity.getUserId());
-			model.addAttribute("Email", entity.getEmail());
-			model.addAttribute("password", entity.getPassword());
-
-			registerDAO.saveRegister(entity);
-			return "Register";
-		} else if (userDAO.validUserId(registerDTO.getUserId())) {
-			model.addAttribute("useUserID", "UserId Already exists");
-			return "Register";
-		} else if (userDAO.validEmail(registerDTO.getEmail())) {
-			model.addAttribute("useEmail", "Email Already exists");
-			return "Register";
 		}
-		return "Register";
+		return agree;
+
 	}
 }

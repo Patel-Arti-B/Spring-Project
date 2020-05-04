@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.xworkz.commonmodule.dto.RegisterDTO;
+import com.xworkz.commonmodule.exception.ControllerException;
+import com.xworkz.commonmodule.exception.ServiceException;
 import com.xworkz.commonmodule.service.RegisterService;
 
 @Controller
@@ -24,14 +26,20 @@ public class RegisterController {
 	}
 
 	@RequestMapping("/register.do")
-	public String onSave(@ModelAttribute("Register") RegisterDTO dto, Model model) {
+	public String onSave(@ModelAttribute("Register") RegisterDTO dto, Model model) throws ControllerException {
 		logger.info("invoked onSave....");
 
 		logger.info("model Attribute " + dto);
 
 		model.addAttribute("msg", "Register Data Successfully...");
 
-		this.service.validAndsave(dto, model);
+		try {
+			this.service.validAndsave(dto, model);
+		} catch (Exception e) {
+			ControllerException exception = new ControllerException();
+			logger.error(exception.getMessage(), e);
+			throw exception;
+		}
 
 		return "Register";
 	}

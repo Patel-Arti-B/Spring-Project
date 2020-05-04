@@ -11,6 +11,7 @@ import com.xworkz.commonmodule.controller.ForgotController;
 import com.xworkz.commonmodule.dao.LoginDAO;
 import com.xworkz.commonmodule.dto.LoginDTO;
 import com.xworkz.commonmodule.entity.RegisterEntity;
+import com.xworkz.commonmodule.exception.ServiceException;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -22,7 +23,7 @@ public class LoginServiceImpl implements LoginService {
 	@Autowired
 	private LoginDAO loginDAO;
 
-	public String validEmailPassword(LoginDTO dto) {
+	public String validEmailPassword(LoginDTO dto) throws ServiceException {
 		boolean flag = false;
 		logger.info("invoked validEmailPassword");
 		try {
@@ -62,8 +63,9 @@ public class LoginServiceImpl implements LoginService {
 				return "LoginSuccess";
 			}
 		} catch (Exception e) {
-			logger.info("Login service exception......");
-			logger.error(e.getMessage(), e);
+			ServiceException exception = new ServiceException();
+			logger.error(exception.getMessage(), e);
+			throw exception;
 		}
 		return "LoginFail";
 	}
